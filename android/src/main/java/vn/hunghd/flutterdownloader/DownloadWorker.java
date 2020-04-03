@@ -46,6 +46,7 @@ import java.util.regex.Pattern;
 
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import androidx.work.ForegroundInfo;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -55,6 +56,7 @@ import io.flutter.view.FlutterCallbackInformation;
 import io.flutter.view.FlutterMain;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.FlutterRunArguments;
+import android.app.Notification;
 
 public class DownloadWorker extends Worker implements MethodChannel.MethodCallHandler {
     public static final String ARG_URL = "url";
@@ -180,7 +182,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         DownloadTask task = taskDao.loadTask(getId().toString());
         primaryId = task.primaryId;
 
-        buildNotification(context);
+        setForegroundAsync(buildNotification(context, primaryId));
+//        buildNotification(context);
 
         updateNotification(context, filename == null ? url : filename, DownloadStatus.RUNNING, task.progress, null);
         taskDao.updateTask(getId().toString(), DownloadStatus.RUNNING, 0);
@@ -420,7 +423,7 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
         }
     }
 
-    private void buildNotification(Context context) {
+    private ForegroundInfo buildNotification(Context context, int primaryId) {
         // Make a channel if necessary
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create the NotificationChannel, but only on API 26+ because
@@ -441,11 +444,18 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
 
         // Create the notification
         builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_download)
+                .setSmallIcon(R.drawable.ic_download)
                 .setOnlyAlertOnce(true)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+//        Notification notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+//                .setContentTitle(name)
+//                .setTicker(name)
+//                .setSmallIcon(R.drawable.ic_download)
+//                .setOngoing(true)
+//                .build();
+        return new ForegroundInfo(primaryId, builder.build());
     }
 
     private void updateNotification(Context context, String title, int status, int progress, PendingIntent intent) {
