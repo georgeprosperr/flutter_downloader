@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {
       'name': 'Big Buck Bunny',
       'link':
-          'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+          'http://dl3.mojdl.com/upload/Movies/2020/Bad%20Boys%20for%20Life/Bad.Boys.for.Life.2020.480p.WEB-DL.PAHE.%5BMojoo%5D.mkv'
     },
     {
       'name': 'Elephant Dream',

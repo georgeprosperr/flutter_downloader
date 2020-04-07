@@ -314,6 +314,8 @@ public class DownloadWorker extends Worker implements MethodChannel.MethodCallHa
                         }
                         if (filename == null || filename.isEmpty()) {
                             filename = url.substring(url.lastIndexOf("/") + 1);
+                            filename = URLDecoder.decode(filename, charset != null ? charset : "ISO-8859-1");
+
                         }
                     }
                 }
